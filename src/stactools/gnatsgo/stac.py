@@ -145,9 +145,6 @@ def _create_item_from_tile(tile_id, asset_hrefs) -> Item:
                 stac_extensions=[])
 
     item.add_links(GNATSGO_LINKS)
-    item.common_metadata.gsd = 10
-    item.common_metadata.providers = GNATSGO_PROVIDERS
-    item.common_metadata.license = "proprietary"
 
     projection = ProjectionExtension.ext(item, add_if_missing=True)
     projection.epsg = epsg
