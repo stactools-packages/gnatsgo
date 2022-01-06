@@ -54,7 +54,7 @@ def create_collection(parquet_path: str) -> Collection:
     ]
     table_tables = []
     for table_name in TABLES.keys():
-        print(table_name)
+        logger.info(table_name)
         filters = None
         if TABLES[table_name].get('partition', False):  # type: ignore
             # just read one small state
@@ -92,7 +92,7 @@ def create_item(asset_hrefs: Union[str, List[str]],
             raise ValueError('item should contain only one parquet table')
         return _create_item_from_parquet(item_id, modified_hrefs[0])
     else:
-        prod, item_id = item_id.split('_', 1)
+        _, item_id = item_id.split('_', 1)
         return _create_item_from_tile(item_id, modified_hrefs)
 
 
@@ -145,9 +145,6 @@ def _create_item_from_tile(tile_id, asset_hrefs) -> Item:
                 stac_extensions=[])
 
     item.add_links(GNATSGO_LINKS)
-    item.common_metadata.gsd = 10
-    item.common_metadata.providers = GNATSGO_PROVIDERS
-    item.common_metadata.license = "proprietary"
 
     projection = ProjectionExtension.ext(item, add_if_missing=True)
     projection.epsg = epsg
@@ -159,7 +156,7 @@ def _create_item_from_tile(tile_id, asset_hrefs) -> Item:
 
     # Create data assets
     for href in sorted(asset_hrefs):
-        title, junk = os.path.basename(href).split('_', 1)
+        title, _ = os.path.basename(href).split('_', 1)
         data_asset = Asset(href=href,
                            media_type=MediaType.COG,
                            roles=["data"],

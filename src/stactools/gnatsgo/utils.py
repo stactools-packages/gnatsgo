@@ -21,6 +21,7 @@ from stactools.gnatsgo.constants import (CONUS, DEFAULT_TILE_SIZE,
 
 
 class Table:
+
     def __init__(self,
                  table_name,
                  gssurgo_dir,
@@ -342,6 +343,7 @@ def create_tiles(left, bottom, right, top, size):
 
 
 class Tile:
+
     def __init__(self, left, bottom, right, top):
         self._left = left
         self._bottom = bottom

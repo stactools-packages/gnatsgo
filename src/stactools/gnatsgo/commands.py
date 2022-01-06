@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 def create_gnatsgo_command(cli):
     """Creates the stactools-gnatsgo command line utility."""
+
     @cli.group(
         "gnatsgo",
         short_help=("Commands for working with stactools-gnatsgo"),
