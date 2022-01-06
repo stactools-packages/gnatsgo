@@ -54,7 +54,7 @@ def create_collection(parquet_path: str) -> Collection:
     ]
     table_tables = []
     for table_name in TABLES.keys():
-        print(table_name)
+        logger.info(table_name)
         filters = None
         if TABLES[table_name].get('partition', False):  # type: ignore
             # just read one small state
