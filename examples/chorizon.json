@@ -1,0 +1,912 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "id": "chorizon",
+  "properties": {
+    "table:columns": [
+      {
+        "name": "hzname",
+        "type": "byte_array",
+        "description": "The full horizon designation, such as Ap, E, or 2Bt2, is shown in this column.  Individual parts of the horizon designation (discontinuity, master horizon, suffixes) are in separate columns. The concatenated string of the individual parts used to distinguish different kinds of layers in the soil.  (Soil Survey Manual)"
+      },
+      {
+        "name": "desgndisc",
+        "type": "int32",
+        "description": "An Arabic numeral used to indicate a significant change in particle-size distribution or mineralogy that indicates a difference in the material from which the horizon(s) formed and/or a significant difference in age, unless that difference in age is indicated by the suffix \"b\".  This numeral is one of four kinds of symbols, that when concatenated, are used to distinguish different kinds of layers in the soil. (Soil Survey Manual)"
+      },
+      {
+        "name": "desgnmaster",
+        "type": "byte_array",
+        "description": "One of four kinds of symbols, that when concatenated, are used to distinguish different kinds of layers in soils.  Master horizons and layers are the base symbols to which other characters are added to complete the designations.  Capital letters, virgules (/), the word 'and', and carets (^) are used.   (Soil Survey Manual)"
+      },
+      {
+        "name": "desgnmasterprime",
+        "type": "byte_array",
+        "description": "A character used to indicate that this horizon has an identical horizon designation as some overlying horizon.  The two horizons in question are separated by at least one other horizon."
+      },
+      {
+        "name": "desgnvert",
+        "type": "int32",
+        "description": "One of the four kinds of symbols, when concatenated, are used to distinguish different kinds of layers in soils. Vertical subdivisions are used to subdivide a horizon or layer designated by a single letter or combination of letters."
+      },
+      {
+        "name": "hzdept_l",
+        "type": "int32",
+        "description": "The distance from the top of the soil to the upper boundary of the soil horizon."
+      },
+      {
+        "name": "hzdept_r",
+        "type": "int32",
+        "description": "The distance from the top of the soil to the upper boundary of the soil horizon."
+      },
+      {
+        "name": "hzdept_h",
+        "type": "int32",
+        "description": "The distance from the top of the soil to the upper boundary of the soil horizon."
+      },
+      {
+        "name": "hzdepb_l",
+        "type": "int32",
+        "description": "The distance from the top of the soil to the base of the soil horizon."
+      },
+      {
+        "name": "hzdepb_r",
+        "type": "int32",
+        "description": "The distance from the top of the soil to the base of the soil horizon."
+      },
+      {
+        "name": "hzdepb_h",
+        "type": "int32",
+        "description": "The distance from the top of the soil to the base of the soil horizon."
+      },
+      {
+        "name": "hzthk_l",
+        "type": "int32",
+        "description": "A measurement from the top to bottom of a soil horizon throughout its areal extent."
+      },
+      {
+        "name": "hzthk_r",
+        "type": "int32",
+        "description": "A measurement from the top to bottom of a soil horizon throughout its areal extent."
+      },
+      {
+        "name": "hzthk_h",
+        "type": "int32",
+        "description": "A measurement from the top to bottom of a soil horizon throughout its areal extent."
+      },
+      {
+        "name": "fraggt10_l",
+        "type": "int32",
+        "description": "The percent by weight of the horizon occupied by rock fragments greater than 10 inches in size."
+      },
+      {
+        "name": "fraggt10_r",
+        "type": "int32",
+        "description": "The percent by weight of the horizon occupied by rock fragments greater than 10 inches in size."
+      },
+      {
+        "name": "fraggt10_h",
+        "type": "int32",
+        "description": "The percent by weight of the horizon occupied by rock fragments greater than 10 inches in size."
+      },
+      {
+        "name": "frag3to10_l",
+        "type": "int32",
+        "description": "The percent by weight of the horizon occupied by rock fragments 3 to 10 inches in size."
+      },
+      {
+        "name": "frag3to10_r",
+        "type": "int32",
+        "description": "The percent by weight of the horizon occupied by rock fragments 3 to 10 inches in size."
+      },
+      {
+        "name": "frag3to10_h",
+        "type": "int32",
+        "description": "The percent by weight of the horizon occupied by rock fragments 3 to 10 inches in size."
+      },
+      {
+        "name": "sieveno4_l",
+        "type": "float",
+        "description": "Soil fraction passing a number 4 sieve (4.70mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno4_r",
+        "type": "float",
+        "description": "Soil fraction passing a number 4 sieve (4.70mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno4_h",
+        "type": "float",
+        "description": "Soil fraction passing a number 4 sieve (4.70mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno10_l",
+        "type": "float",
+        "description": "Soil fraction passing a number 10 sieve (2.00mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno10_r",
+        "type": "float",
+        "description": "Soil fraction passing a number 10 sieve (2.00mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno10_h",
+        "type": "float",
+        "description": "Soil fraction passing a number 10 sieve (2.00mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno40_l",
+        "type": "float",
+        "description": "Soil fraction passing a number 40 sieve (0.42mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno40_r",
+        "type": "float",
+        "description": "Soil fraction passing a number 40 sieve (0.42mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno40_h",
+        "type": "float",
+        "description": "Soil fraction passing a number 40 sieve (0.42mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno200_l",
+        "type": "float",
+        "description": "Soil fraction passing a number 200 sieve (0.074mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno200_r",
+        "type": "float",
+        "description": "Soil fraction passing a number 200 sieve (0.074mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sieveno200_h",
+        "type": "float",
+        "description": "Soil fraction passing a number 200 sieve (0.074mm square opening) as a weight percentage of the less than 3 inch (76.4mm) fraction."
+      },
+      {
+        "name": "sandtotal_l",
+        "type": "float",
+        "description": "Mineral particles 0.05mm to 2.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandtotal_r",
+        "type": "float",
+        "description": "Mineral particles 0.05mm to 2.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandtotal_h",
+        "type": "float",
+        "description": "Mineral particles 0.05mm to 2.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandvc_l",
+        "type": "float",
+        "description": "Mineral particles 1.0mm to 2.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandvc_r",
+        "type": "float",
+        "description": "Mineral particles 1.0mm to 2.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandvc_h",
+        "type": "float",
+        "description": "Mineral particles 1.0mm to 2.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandco_l",
+        "type": "float",
+        "description": "Mineral particles 0.5mm to 1.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandco_r",
+        "type": "float",
+        "description": "Mineral particles 0.5mm to 1.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandco_h",
+        "type": "float",
+        "description": "Mineral particles 0.5mm to 1.0mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandmed_l",
+        "type": "float",
+        "description": "Mineral particles 0.25mm to 0.5mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandmed_r",
+        "type": "float",
+        "description": "Mineral particles 0.25mm to 0.5mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandmed_h",
+        "type": "float",
+        "description": "Mineral particles 0.25mm to 0.5mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandfine_l",
+        "type": "float",
+        "description": "Mineral particles 0.10 to 0.25mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandfine_r",
+        "type": "float",
+        "description": "Mineral particles 0.10 to 0.25mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandfine_h",
+        "type": "float",
+        "description": "Mineral particles 0.10 to 0.25mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandvf_l",
+        "type": "float",
+        "description": "Mineral particles 0.05 to 0.10mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandvf_r",
+        "type": "float",
+        "description": "Mineral particles 0.05 to 0.10mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "sandvf_h",
+        "type": "float",
+        "description": "Mineral particles 0.05 to 0.10mm in equivalent diameter as a weight percentage of the less than 2 mm fraction."
+      },
+      {
+        "name": "silttotal_l",
+        "type": "float",
+        "description": "Mineral particles 0.002 to 0.05mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "silttotal_r",
+        "type": "float",
+        "description": "Mineral particles 0.002 to 0.05mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "silttotal_h",
+        "type": "float",
+        "description": "Mineral particles 0.002 to 0.05mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "siltco_l",
+        "type": "float",
+        "description": "Mineral particles ranging in size from 0.02mm to 0.05mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "siltco_r",
+        "type": "float",
+        "description": "Mineral particles ranging in size from 0.02mm to 0.05mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "siltco_h",
+        "type": "float",
+        "description": "Mineral particles ranging in size from 0.02mm to 0.05mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "siltfine_l",
+        "type": "float",
+        "description": "Mineral particles ranging in size from 0.002 to 0.02mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "siltfine_r",
+        "type": "float",
+        "description": "Mineral particles ranging in size from 0.002 to 0.02mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "siltfine_h",
+        "type": "float",
+        "description": "Mineral particles ranging in size from 0.002 to 0.02mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "claytotal_l",
+        "type": "float",
+        "description": "Mineral particles less than 0.002mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "claytotal_r",
+        "type": "float",
+        "description": "Mineral particles less than 0.002mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "claytotal_h",
+        "type": "float",
+        "description": "Mineral particles less than 0.002mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "claysizedcarb_l",
+        "type": "float",
+        "description": "Carbonate particles less than 0.002mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "claysizedcarb_r",
+        "type": "float",
+        "description": "Carbonate particles less than 0.002mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "claysizedcarb_h",
+        "type": "float",
+        "description": "Carbonate particles less than 0.002mm in equivalent diameter as a weight percentage of the less than 2.0mm fraction."
+      },
+      {
+        "name": "om_l",
+        "type": "float",
+        "description": "The amount by weight of decomposed plant and animal residue expressed as a weight percentage of the less than 2 mm soil material."
+      },
+      {
+        "name": "om_r",
+        "type": "float",
+        "description": "The amount by weight of decomposed plant and animal residue expressed as a weight percentage of the less than 2 mm soil material."
+      },
+      {
+        "name": "om_h",
+        "type": "float",
+        "description": "The amount by weight of decomposed plant and animal residue expressed as a weight percentage of the less than 2 mm soil material."
+      },
+      {
+        "name": "dbtenthbar_l",
+        "type": "float",
+        "description": "The oven dried weight of the less than 2 mm soil material per unit volume of soil at a water tension of 1/10 bar."
+      },
+      {
+        "name": "dbtenthbar_r",
+        "type": "float",
+        "description": "The oven dried weight of the less than 2 mm soil material per unit volume of soil at a water tension of 1/10 bar."
+      },
+      {
+        "name": "dbtenthbar_h",
+        "type": "float",
+        "description": "The oven dried weight of the less than 2 mm soil material per unit volume of soil at a water tension of 1/10 bar."
+      },
+      {
+        "name": "dbthirdbar_l",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil at a water tension of 1/3 bar."
+      },
+      {
+        "name": "dbthirdbar_r",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil at a water tension of 1/3 bar."
+      },
+      {
+        "name": "dbthirdbar_h",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil at a water tension of 1/3 bar."
+      },
+      {
+        "name": "dbfifteenbar_l",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil at a water tension of 15 bar."
+      },
+      {
+        "name": "dbfifteenbar_r",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil at a water tension of 15 bar."
+      },
+      {
+        "name": "dbfifteenbar_h",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil at a water tension of 15 bar."
+      },
+      {
+        "name": "dbovendry_l",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil exclusive of the desiccation cracks, measured on a coated clod."
+      },
+      {
+        "name": "dbovendry_r",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil exclusive of the desiccation cracks, measured on a coated clod."
+      },
+      {
+        "name": "dbovendry_h",
+        "type": "float",
+        "description": "The oven dry weight of the less than 2 mm soil material per unit volume of soil exclusive of the desiccation cracks, measured on a coated clod."
+      },
+      {
+        "name": "partdensity",
+        "type": "float",
+        "description": "Mass per unit of volume (not including pore space) of the solid soil particle either mineral or organic.  Also known as specific gravity."
+      },
+      {
+        "name": "ksat_l",
+        "type": "float",
+        "description": "The amount of water that would move vertically through a unit area of saturated soil in unit time under unit hydraulic gradient."
+      },
+      {
+        "name": "ksat_r",
+        "type": "float",
+        "description": "The amount of water that would move vertically through a unit area of saturated soil in unit time under unit hydraulic gradient."
+      },
+      {
+        "name": "ksat_h",
+        "type": "float",
+        "description": "The amount of water that would move vertically through a unit area of saturated soil in unit time under unit hydraulic gradient."
+      },
+      {
+        "name": "awc_l",
+        "type": "float",
+        "description": "The amount of water that an increment of soil depth, inclusive of fragments, can store that is available to plants.  AWC is expressed as a volume fraction, and is commonly estimated as the difference between the water contents at 1/10 or 1/3 bar (field capacity) and 15 bars (permanent wilting point) tension and adjusted for salinity, and fragments."
+      },
+      {
+        "name": "awc_r",
+        "type": "float",
+        "description": "The amount of water that an increment of soil depth, inclusive of fragments, can store that is available to plants.  AWC is expressed as a volume fraction, and is commonly estimated as the difference between the water contents at 1/10 or 1/3 bar (field capacity) and 15 bars (permanent wilting point) tension and adjusted for salinity, and fragments."
+      },
+      {
+        "name": "awc_h",
+        "type": "float",
+        "description": "The amount of water that an increment of soil depth, inclusive of fragments, can store that is available to plants.  AWC is expressed as a volume fraction, and is commonly estimated as the difference between the water contents at 1/10 or 1/3 bar (field capacity) and 15 bars (permanent wilting point) tension and adjusted for salinity, and fragments."
+      },
+      {
+        "name": "wtenthbar_l",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 1/10 bar (10 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wtenthbar_r",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 1/10 bar (10 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wtenthbar_h",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 1/10 bar (10 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wthirdbar_l",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 1/3 bar (33 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wthirdbar_r",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 1/3 bar (33 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wthirdbar_h",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 1/3 bar (33 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wfifteenbar_l",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 15 bars (1500 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wfifteenbar_r",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 15 bars (1500 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wfifteenbar_h",
+        "type": "float",
+        "description": "The volumetric content of soil water retained at a tension of 15 bars (1500 kPa), expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wsatiated_l",
+        "type": "int32",
+        "description": "The estimated volumetric soil water content at or near zero bar tension, expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wsatiated_r",
+        "type": "int32",
+        "description": "The estimated volumetric soil water content at or near zero bar tension, expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "wsatiated_h",
+        "type": "int32",
+        "description": "The estimated volumetric soil water content at or near zero bar tension, expressed as a percentage of the whole soil."
+      },
+      {
+        "name": "lep_l",
+        "type": "float",
+        "description": "The linear expression of the volume difference of natural soil fabric at 1/3 or 1/10 bar water content and oven dryness. The volume change is reported as percent change for the whole soil."
+      },
+      {
+        "name": "lep_r",
+        "type": "float",
+        "description": "The linear expression of the volume difference of natural soil fabric at 1/3 or 1/10 bar water content and oven dryness. The volume change is reported as percent change for the whole soil."
+      },
+      {
+        "name": "lep_h",
+        "type": "float",
+        "description": "The linear expression of the volume difference of natural soil fabric at 1/3 or 1/10 bar water content and oven dryness. The volume change is reported as percent change for the whole soil."
+      },
+      {
+        "name": "ll_l",
+        "type": "float",
+        "description": "The water content of the soil at the change between the liquid and plastic states. Values less than 14 cannot be measured and are assigned a zero in the database.  The zero indicates a non-plastic soil."
+      },
+      {
+        "name": "ll_r",
+        "type": "float",
+        "description": "The water content of the soil at the change between the liquid and plastic states. Values less than 14 cannot be measured and are assigned a zero in the database.  The zero indicates a non-plastic soil."
+      },
+      {
+        "name": "ll_h",
+        "type": "float",
+        "description": "The water content of the soil at the change between the liquid and plastic states. Values less than 14 cannot be measured and are assigned a zero in the database.  The zero indicates a non-plastic soil."
+      },
+      {
+        "name": "pi_l",
+        "type": "float",
+        "description": "The numerical difference between the liquid limit and plastic limit."
+      },
+      {
+        "name": "pi_r",
+        "type": "float",
+        "description": "The numerical difference between the liquid limit and plastic limit."
+      },
+      {
+        "name": "pi_h",
+        "type": "float",
+        "description": "The numerical difference between the liquid limit and plastic limit."
+      },
+      {
+        "name": "aashind_l",
+        "type": "int32",
+        "description": "The empirical group index formula devised for approximately within-group evaluation of the \"clayey granular materials\" and the \"silty-clay materials\"."
+      },
+      {
+        "name": "aashind_r",
+        "type": "int32",
+        "description": "The empirical group index formula devised for approximately within-group evaluation of the \"clayey granular materials\" and the \"silty-clay materials\"."
+      },
+      {
+        "name": "aashind_h",
+        "type": "int32",
+        "description": "The empirical group index formula devised for approximately within-group evaluation of the \"clayey granular materials\" and the \"silty-clay materials\"."
+      },
+      {
+        "name": "kwfact",
+        "type": "byte_array",
+        "description": "The ease with which pores of a saturated soil transmit water. Formally, the proportionality coefficient that expresses the relationship of the rate of water movement to hydraulic gradient in Darcy's Law, a law that describes the rate of water movement through porous media. Commonly abbreviated as \"Ksat\".   Expressed micrometers per second. To convert micrometers per second to inches per hour, multiply micrometers per second by 0.1417."
+      },
+      {
+        "name": "kffact",
+        "type": "byte_array",
+        "description": "An erodibility factor which quantifies the susceptibility of soil particles to detachment by water for the fine earth portion of the soil (excludes rock fragments) expressed in ton.acre.hr (hundreds of acre.foot.tonf.inch)-1."
+      },
+      {
+        "name": "caco3_l",
+        "type": "int32",
+        "description": "The quantity of Carbonate (CO3) in the soil expressed as CaCO3 and as a weight percentage of the less than 2 mm size fraction."
+      },
+      {
+        "name": "caco3_r",
+        "type": "int32",
+        "description": "The quantity of Carbonate (CO3) in the soil expressed as CaCO3 and as a weight percentage of the less than 2 mm size fraction."
+      },
+      {
+        "name": "caco3_h",
+        "type": "int32",
+        "description": "The quantity of Carbonate (CO3) in the soil expressed as CaCO3 and as a weight percentage of the less than 2 mm size fraction."
+      },
+      {
+        "name": "gypsum_l",
+        "type": "int32",
+        "description": "The percent by weight of hydrated calcium sulfate in the less than 20 mm fraction of soil."
+      },
+      {
+        "name": "gypsum_r",
+        "type": "int32",
+        "description": "The percent by weight of hydrated calcium sulfate in the less than 20 mm fraction of soil."
+      },
+      {
+        "name": "gypsum_h",
+        "type": "int32",
+        "description": "The percent by weight of hydrated calcium sulfate in the less than 20 mm fraction of soil."
+      },
+      {
+        "name": "sar_l",
+        "type": "float",
+        "description": "A measure of the amount of Sodium (Na) relative to Calcium (Ca) and Magnesium (Mg) in the water extract from saturated soil paste. (Soil Survey Staff (2004, method 4F3b)"
+      },
+      {
+        "name": "sar_r",
+        "type": "float",
+        "description": "A measure of the amount of Sodium (Na) relative to Calcium (Ca) and Magnesium (Mg) in the water extract from saturated soil paste. (Soil Survey Staff (2004, method 4F3b)"
+      },
+      {
+        "name": "sar_h",
+        "type": "float",
+        "description": "A measure of the amount of Sodium (Na) relative to Calcium (Ca) and Magnesium (Mg) in the water extract from saturated soil paste. (Soil Survey Staff (2004, method 4F3b)"
+      },
+      {
+        "name": "ec_l",
+        "type": "float",
+        "description": "The electrical conductivity of an extract from saturated soil paste."
+      },
+      {
+        "name": "ec_r",
+        "type": "float",
+        "description": "The electrical conductivity of an extract from saturated soil paste."
+      },
+      {
+        "name": "ec_h",
+        "type": "float",
+        "description": "The electrical conductivity of an extract from saturated soil paste."
+      },
+      {
+        "name": "cec7_l",
+        "type": "float",
+        "description": "The amount of readily exchangeable cations that can be electrically adsorbed to negative charges in the soil, soil constituent, or other material, at pH 7.0, as estimated by the ammonium acetate method."
+      },
+      {
+        "name": "cec7_r",
+        "type": "float",
+        "description": "The amount of readily exchangeable cations that can be electrically adsorbed to negative charges in the soil, soil constituent, or other material, at pH 7.0, as estimated by the ammonium acetate method."
+      },
+      {
+        "name": "cec7_h",
+        "type": "float",
+        "description": "The amount of readily exchangeable cations that can be electrically adsorbed to negative charges in the soil, soil constituent, or other material, at pH 7.0, as estimated by the ammonium acetate method."
+      },
+      {
+        "name": "ecec_l",
+        "type": "float",
+        "description": "The sum of NH4OAc extractable bases plus KCl extractable aluminum."
+      },
+      {
+        "name": "ecec_r",
+        "type": "float",
+        "description": "The sum of NH4OAc extractable bases plus KCl extractable aluminum."
+      },
+      {
+        "name": "ecec_h",
+        "type": "float",
+        "description": "The sum of NH4OAc extractable bases plus KCl extractable aluminum."
+      },
+      {
+        "name": "sumbases_l",
+        "type": "float",
+        "description": "The sum of NH4OAc extractable bases (pH 7.0), reported on less than 2mm base."
+      },
+      {
+        "name": "sumbases_r",
+        "type": "float",
+        "description": "The sum of NH4OAc extractable bases (pH 7.0), reported on less than 2mm base."
+      },
+      {
+        "name": "sumbases_h",
+        "type": "float",
+        "description": "The sum of NH4OAc extractable bases (pH 7.0), reported on less than 2mm base."
+      },
+      {
+        "name": "ph1to1h2o_l",
+        "type": "float",
+        "description": "The negative common logarithm of the hydrogen ion activity in the soil using the 1:1 soil-water ratio method.  A numerical expression of the relative acidity or alkalinity of a soil sample.  (SSM)"
+      },
+      {
+        "name": "ph1to1h2o_r",
+        "type": "float",
+        "description": "The negative common logarithm of the hydrogen ion activity in the soil using the 1:1 soil-water ratio method.  A numerical expression of the relative acidity or alkalinity of a soil sample.  (SSM)"
+      },
+      {
+        "name": "ph1to1h2o_h",
+        "type": "float",
+        "description": "The negative common logarithm of the hydrogen ion activity in the soil using the 1:1 soil-water ratio method.  A numerical expression of the relative acidity or alkalinity of a soil sample.  (SSM)"
+      },
+      {
+        "name": "ph01mcacl2_l",
+        "type": "float",
+        "description": "The negative common logarithm of the hydrogen ion activity in the soil, using the 0.01M CaCl2 method, in a 1:2 soil:solution ratio.  A numerical expression of the relative acidity or alkalinity of a soil sample. (SSM)"
+      },
+      {
+        "name": "ph01mcacl2_r",
+        "type": "float",
+        "description": "The negative common logarithm of the hydrogen ion activity in the soil, using the 0.01M CaCl2 method, in a 1:2 soil:solution ratio.  A numerical expression of the relative acidity or alkalinity of a soil sample. (SSM)"
+      },
+      {
+        "name": "ph01mcacl2_h",
+        "type": "float",
+        "description": "The negative common logarithm of the hydrogen ion activity in the soil, using the 0.01M CaCl2 method, in a 1:2 soil:solution ratio.  A numerical expression of the relative acidity or alkalinity of a soil sample. (SSM)"
+      },
+      {
+        "name": "freeiron_l",
+        "type": "float",
+        "description": "The secondary iron oxides such as geothite, hematite, ferrihydrite, lepidocrocite and maghemite.  This form of iron may occur as discrete particles, as coatings on other particles, or as cementing agents between soil mineral grains.  It is iron extracted by dithionite-citrate."
+      },
+      {
+        "name": "freeiron_r",
+        "type": "float",
+        "description": "The secondary iron oxides such as geothite, hematite, ferrihydrite, lepidocrocite and maghemite.  This form of iron may occur as discrete particles, as coatings on other particles, or as cementing agents between soil mineral grains.  It is iron extracted by dithionite-citrate."
+      },
+      {
+        "name": "freeiron_h",
+        "type": "float",
+        "description": "The secondary iron oxides such as geothite, hematite, ferrihydrite, lepidocrocite and maghemite.  This form of iron may occur as discrete particles, as coatings on other particles, or as cementing agents between soil mineral grains.  It is iron extracted by dithionite-citrate."
+      },
+      {
+        "name": "feoxalate_l",
+        "type": "float",
+        "description": "The amount of ammonium oxalate extractable iron in the less than 2mm fraction.  It is considered a measure of noncrystalline iron in the soil."
+      },
+      {
+        "name": "feoxalate_r",
+        "type": "float",
+        "description": "The amount of ammonium oxalate extractable iron in the less than 2mm fraction.  It is considered a measure of noncrystalline iron in the soil."
+      },
+      {
+        "name": "feoxalate_h",
+        "type": "float",
+        "description": "The amount of ammonium oxalate extractable iron in the less than 2mm fraction.  It is considered a measure of noncrystalline iron in the soil."
+      },
+      {
+        "name": "extracid_l",
+        "type": "float",
+        "description": "A measure of soil exchangeable hydrogen ions that may become active by cation exchange."
+      },
+      {
+        "name": "extracid_r",
+        "type": "float",
+        "description": "A measure of soil exchangeable hydrogen ions that may become active by cation exchange."
+      },
+      {
+        "name": "extracid_h",
+        "type": "float",
+        "description": "A measure of soil exchangeable hydrogen ions that may become active by cation exchange."
+      },
+      {
+        "name": "extral_l",
+        "type": "float",
+        "description": "The amount of aluminum extracted in 1 normal potassium chloride.  The following laboratory method is applied:  55 ml of 1 normal potassium chloride is extracted through 2.5 g of soil sample.  The extract is analyzed by use of an atomic adsorption spectrometer or similar instrument (SSIR #1, method 6G9a and NSSH)."
+      },
+      {
+        "name": "extral_r",
+        "type": "float",
+        "description": "The amount of aluminum extracted in 1 normal potassium chloride.  The following laboratory method is applied:  55 ml of 1 normal potassium chloride is extracted through 2.5 g of soil sample.  The extract is analyzed by use of an atomic adsorption spectrometer or similar instrument (SSIR #1, method 6G9a and NSSH)."
+      },
+      {
+        "name": "extral_h",
+        "type": "float",
+        "description": "The amount of aluminum extracted in 1 normal potassium chloride.  The following laboratory method is applied:  55 ml of 1 normal potassium chloride is extracted through 2.5 g of soil sample.  The extract is analyzed by use of an atomic adsorption spectrometer or similar instrument (SSIR #1, method 6G9a and NSSH)."
+      },
+      {
+        "name": "aloxalate_l",
+        "type": "float",
+        "description": "The amount of ammonium oxalate extractable aluminum in the less than 2mm fraction.  This is an estimate of the total pedogenic aluminum, much of which may be in noncrystalline material, or complexed by organic matter."
+      },
+      {
+        "name": "aloxalate_r",
+        "type": "float",
+        "description": "The amount of ammonium oxalate extractable aluminum in the less than 2mm fraction.  This is an estimate of the total pedogenic aluminum, much of which may be in noncrystalline material, or complexed by organic matter."
+      },
+      {
+        "name": "aloxalate_h",
+        "type": "float",
+        "description": "The amount of ammonium oxalate extractable aluminum in the less than 2mm fraction.  This is an estimate of the total pedogenic aluminum, much of which may be in noncrystalline material, or complexed by organic matter."
+      },
+      {
+        "name": "pbray1_l",
+        "type": "float",
+        "description": "The amount of phosphorous in the less than 2mm fraction, that is extractable using the Bray1 method.  It represents the plant available phosphorous content."
+      },
+      {
+        "name": "pbray1_r",
+        "type": "float",
+        "description": "The amount of phosphorous in the less than 2mm fraction, that is extractable using the Bray1 method.  It represents the plant available phosphorous content."
+      },
+      {
+        "name": "pbray1_h",
+        "type": "float",
+        "description": "The amount of phosphorous in the less than 2mm fraction, that is extractable using the Bray1 method.  It represents the plant available phosphorous content."
+      },
+      {
+        "name": "poxalate_l",
+        "type": "float",
+        "description": "The amount of phosphorous in the less than 2mm fraction, that is extractable by ammonium oxalate method.  It represents the phosphorous level intermediate between total P and water soluble P."
+      },
+      {
+        "name": "poxalate_r",
+        "type": "float",
+        "description": "The amount of phosphorous in the less than 2mm fraction, that is extractable by ammonium oxalate method.  It represents the phosphorous level intermediate between total P and water soluble P."
+      },
+      {
+        "name": "poxalate_h",
+        "type": "float",
+        "description": "The amount of phosphorous in the less than 2mm fraction, that is extractable by ammonium oxalate method.  It represents the phosphorous level intermediate between total P and water soluble P."
+      },
+      {
+        "name": "ph2osoluble_l",
+        "type": "float",
+        "description": "The amount of water soluble phosphorous in the less than 2mm fraction, that is extractable by distilled water.  It represents the mobile phosphorous content."
+      },
+      {
+        "name": "ph2osoluble_r",
+        "type": "float",
+        "description": "The amount of water soluble phosphorous in the less than 2mm fraction, that is extractable by distilled water.  It represents the mobile phosphorous content."
+      },
+      {
+        "name": "ph2osoluble_h",
+        "type": "float",
+        "description": "The amount of water soluble phosphorous in the less than 2mm fraction, that is extractable by distilled water.  It represents the mobile phosphorous content."
+      },
+      {
+        "name": "ptotal_l",
+        "type": "float",
+        "description": "The estimate of the total phosphorous content of the soil, measured after total dissolution of a size fraction of the soil material.  It is reported as a gravimetric percent oxide of the size fraction used."
+      },
+      {
+        "name": "ptotal_r",
+        "type": "float",
+        "description": "The estimate of the total phosphorous content of the soil, measured after total dissolution of a size fraction of the soil material.  It is reported as a gravimetric percent oxide of the size fraction used."
+      },
+      {
+        "name": "ptotal_h",
+        "type": "float",
+        "description": "The estimate of the total phosphorous content of the soil, measured after total dissolution of a size fraction of the soil material.  It is reported as a gravimetric percent oxide of the size fraction used."
+      },
+      {
+        "name": "excavdifcl",
+        "type": "byte_array",
+        "description": "An estimation of the difficulty of working an excavation into soil layers, horizons, pedons, or geologic layers.  In most instances, excavation difficulty is related to and controlled by a water state."
+      },
+      {
+        "name": "excavdifms",
+        "type": "byte_array",
+        "description": "The soil moisture status for which the excavation difficulty class is assigned for the individual component."
+      },
+      {
+        "name": "cokey",
+        "type": "byte_array",
+        "description": "The unique identifier of a record in the Component table.  Use this column to join the Horizon table to the Component table."
+      },
+      {
+        "name": "chkey",
+        "type": "byte_array",
+        "description": "A non-connotative string of characters used to uniquely identify a record in the Horizon table."
+      }
+    ],
+    "datetime": "2020-07-01T00:00:00Z"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          171.9169,
+          -14.3799
+        ],
+        [
+          171.9169,
+          71.4567
+        ],
+        [
+          -170.8513,
+          71.4567
+        ],
+        [
+          -170.8513,
+          -14.3799
+        ],
+        [
+          171.9169,
+          -14.3799
+        ]
+      ]
+    ]
+  },
+  "links": [],
+  "assets": {
+    "data": {
+      "href": "/data/ssurgo/parquet/chorizon.parquet",
+      "type": "application/x-parquet",
+      "title": "Dataset root",
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "bbox": [
+    -170.8513,
+    -14.3799,
+    171.9169,
+    71.4567
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/table/v1.2.0/schema.json"
+  ]
+}

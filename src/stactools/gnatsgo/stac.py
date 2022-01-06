@@ -1,14 +1,26 @@
 import logging
-from datetime import datetime, timezone
+import os
+from typing import List, Optional, Union
 
-from pystac import (Asset, CatalogType, Collection, Extent, Item, MediaType,
-                    Provider, ProviderRole, SpatialExtent, TemporalExtent)
+import pyarrow.parquet as pq
+import rasterio
+import stac_table
+from pystac import (Asset, Collection, Extent, Item, MediaType, SpatialExtent,
+                    TemporalExtent)
 from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.raster import RasterBand, RasterExtension
+from shapely.geometry import box, mapping
+from stactools.core.io import ReadHrefModifier
+
+from stactools.gnatsgo.constants import (GNATSGO_DATETIME, GNATSGO_DESCRIPTION,
+                                         GNATSGO_EXTENTS, GNATSGO_LINKS,
+                                         GNATSGO_PROVIDERS, TABLES)
+from stactools.gnatsgo.utils import bounds_to_geojson, overall_bbox
 
 logger = logging.getLogger(__name__)
 
 
-def create_collection() -> Collection:
+def create_collection(parquet_path: str) -> Collection:
     """Create a STAC Collection
 
     This function includes logic to extract all relevant metadata from
@@ -17,96 +29,154 @@ def create_collection() -> Collection:
 
     See `Collection<https://pystac.readthedocs.io/en/latest/api.html#collection>`_.
 
+    parquet_path is a base path where the parquet tables are stored.
+                 each will be parsed for the table description.
     Returns:
         Collection: STAC Collection object
     """
-    providers = [
-        Provider(
-            name="The OS Community",
-            roles=[
-                ProviderRole.PRODUCER, ProviderRole.PROCESSOR,
-                ProviderRole.HOST
-            ],
-            url="https://github.com/stac-utils/stactools",
-        )
-    ]
-
-    # Time must be in UTC
-    demo_time = datetime.now(tz=timezone.utc)
 
     extent = Extent(
-        SpatialExtent([[-180., 90., 180., -90.]]),
-        TemporalExtent([demo_time, None]),
+        SpatialExtent(GNATSGO_EXTENTS),
+        TemporalExtent([GNATSGO_DATETIME, None]),
     )
 
-    collection = Collection(
-        id="my-collection-id",
-        title="A dummy STAC Collection",
-        description="Used for demonstration purposes",
-        license="CC-0",
-        providers=providers,
-        extent=extent,
-        catalog_type=CatalogType.RELATIVE_PUBLISHED,
-    )
+    collection = Collection(id="gnatsgo",
+                            title="The gNATSGO Soil Database",
+                            description=GNATSGO_DESCRIPTION,
+                            license="proprietary",
+                            providers=GNATSGO_PROVIDERS,
+                            extent=extent)
+    collection.stac_extensions.append(stac_table.SCHEMA_URI)
+    collection.keywords = [
+        "Soils",
+        "SSURGO",
+        "USDA",
+    ]
+    table_tables = []
+    for table_name in TABLES.keys():
+        print(table_name)
+        filters = None
+        if TABLES[table_name].get('partition', False):  # type: ignore
+            # just read one small state
+            filters = [('state', '=', 'NH')]
+        t = pq.read_table(os.path.join(parquet_path, f"{table_name}.parquet"),
+                          filters=filters)
+        table_tables.append({
+            "name":
+            table_name,
+            "description":
+            t.schema.metadata[b'description'].decode(),
+        })
 
+    collection.extra_fields["table:tables"] = table_tables
+    collection.links = GNATSGO_LINKS
+
+    collection.validate()
     return collection
 
 
-def create_item(asset_href: str) -> Item:
-    """Create a STAC Item
+def create_item(asset_hrefs: Union[str, List[str]],
+                read_href_modifier: Optional[ReadHrefModifier] = None) -> Item:
+    """Create a STAC Item from either a parquet file, or aa tile of gNATSGO/gSSURGO data."""
+    if isinstance(asset_hrefs, str):
+        asset_hrefs = [asset_hrefs]
+    if read_href_modifier:
+        modified_hrefs = [read_href_modifier(href) for href in asset_hrefs]
+    else:
+        modified_hrefs = asset_hrefs
 
-    This function should include logic to extract all relevant metadata from an
-    asset, metadata asset, and/or a constants.py file.
+    item_id, extension = os.path.splitext(os.path.basename(modified_hrefs[0]))
 
-    See `Item<https://pystac.readthedocs.io/en/latest/api.html#item>`_.
+    if extension == '.parquet':
+        if len(modified_hrefs) > 1:
+            raise ValueError('item should contain only one parquet table')
+        return _create_item_from_parquet(item_id, modified_hrefs[0])
+    else:
+        prod, item_id = item_id.split('_', 1)
+        return _create_item_from_tile(item_id, modified_hrefs)
 
-    Args:
-        asset_href (str): The HREF pointing to an asset associated with the item
 
-    Returns:
-        Item: STAC Item object
-    """
+def _create_item_from_parquet(table_name: str, asset_href: str) -> Item:
+    bbox = overall_bbox()
+    geometry = mapping(box(*bbox))
 
-    properties = {
-        "title": "A dummy STAC Item",
-        "description": "Used for demonstration purposes",
-    }
+    item = Item(id=table_name,
+                bbox=bbox,
+                geometry=geometry,
+                datetime=GNATSGO_DATETIME,
+                properties={})
 
-    demo_geom = {
-        "type":
-        "Polygon",
-        "coordinates": [[[-180, -90], [180, -90], [180, 90], [-180, 90],
-                         [-180, -90]]],
-    }
+    # don't do the validate here, because metadata is in byte strings, which angers json
+    item = stac_table.generate(asset_href,
+                               item,
+                               proj=False,
+                               count_rows=False,
+                               validate=False)
 
-    # Time must be in UTC
-    demo_time = datetime.now(tz=timezone.utc)
+    item.properties['table:columns'] = [
+        tc for tc in item.properties['table:columns']
+        if not tc['name'].startswith('__')
+    ]
 
-    item = Item(
-        id="my-item-id",
-        properties=properties,
-        geometry=demo_geom,
-        bbox=[-180, 90, 180, -90],
-        datetime=demo_time,
-        stac_extensions=[],
-    )
+    for col in item.properties['table:columns']:
+        meta = col.pop('metadata', False)
+        if meta and meta.get(b'description', False):
+            col['description'] = meta[b'description'].decode()
 
-    # It is a good idea to include proj attributes to optimize for libs like stac-vrt
-    proj_attrs = ProjectionExtension.ext(item, add_if_missing=True)
-    proj_attrs.epsg = 4326
-    proj_attrs.bbox = [-180, 90, 180, -90]
-    proj_attrs.shape = [1, 1]  # Raster shape
-    proj_attrs.transform = [-180, 360, 0, 90, 0, 180]  # Raster GeoTransform
+    item.validate()
+    return item
 
-    # Add an asset to the item (COG for example)
-    item.add_asset(
-        "image",
-        Asset(
-            href=asset_href,
-            media_type=MediaType.COG,
-            roles=["data"],
-            title="A dummy STAC Item COG",
-        ),
-    )
 
+def _create_item_from_tile(tile_id, asset_hrefs) -> Item:
+    with rasterio.open(asset_hrefs[0]) as dataset:
+        epsg = dataset.crs.to_epsg()
+        wkt = dataset.crs.wkt
+        bbox = list(dataset.bounds)
+        geometry = mapping(box(*bbox))
+        transform = dataset.transform
+        shape = dataset.shape
+
+    transformed_bbox, transformed_geom = bounds_to_geojson(bbox, dataset.crs)
+    item = Item(id=tile_id,
+                geometry=transformed_geom,
+                bbox=transformed_bbox,
+                datetime=GNATSGO_DATETIME,
+                properties={},
+                stac_extensions=[])
+
+    item.add_links(GNATSGO_LINKS)
+    item.common_metadata.gsd = 10
+    item.common_metadata.providers = GNATSGO_PROVIDERS
+    item.common_metadata.license = "proprietary"
+
+    projection = ProjectionExtension.ext(item, add_if_missing=True)
+    projection.epsg = epsg
+    projection.wkt2 = wkt
+    projection.transform = transform[0:6]
+    projection.shape = shape
+    projection.geometry = geometry
+    projection.bbox = bbox
+
+    # Create data assets
+    for href in sorted(asset_hrefs):
+        title, junk = os.path.basename(href).split('_', 1)
+        data_asset = Asset(href=href,
+                           media_type=MediaType.COG,
+                           roles=["data"],
+                           title=title)
+        item.add_asset(title, data_asset)
+
+        rb = []
+        with rasterio.open(href) as dataset:
+            for i in range(len(dataset.indexes)):
+                # nodata = dataset.get_nodatavals()[i]
+                # dtype = dataset.dtypes[i]
+                rb.append(
+                    RasterBand.create(nodata=dataset.get_nodatavals()[i],
+                                      data_type=dataset.dtypes[i],
+                                      spatial_resolution=10))
+        rast_ext = RasterExtension.ext(data_asset, add_if_missing=True)
+        rast_ext.bands = rb
+
+    item.validate()
     return item
