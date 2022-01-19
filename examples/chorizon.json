@@ -858,6 +858,10 @@
         "name": "chkey",
         "type": "byte_array",
         "description": "A non-connotative string of characters used to uniquely identify a record in the Horizon table."
+      },
+      {
+        "name": "state",
+        "type": "byte_array"
       }
     ],
     "datetime": "2020-07-01T00:00:00Z"

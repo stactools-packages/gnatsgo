@@ -1,0 +1,248 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "id": "conus_101445_1580705_265285_1416865",
+  "properties": {
+    "proj:epsg": null,
+    "proj:wkt2": "PROJCS[\"USA_Contiguous_Albers_Equal_Area_Conic_USGS_version\",GEOGCS[\"NAD83\",DATUM[\"North_American_Datum_1983\",SPHEROID[\"GRS 1980\",6378137,298.257222101004,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"6269\"]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4269\"]],PROJECTION[\"Albers_Conic_Equal_Area\"],PARAMETER[\"latitude_of_center\",23],PARAMETER[\"longitude_of_center\",-96],PARAMETER[\"standard_parallel_1\",29.5],PARAMETER[\"standard_parallel_2\",45.5],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH]]",
+    "proj:transform": [
+      10.0,
+      0.0,
+      101445.0,
+      0.0,
+      -10.0,
+      1580705.0
+    ],
+    "proj:shape": [
+      16384,
+      16384
+    ],
+    "proj:geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            265285.0,
+            1416865.0
+          ],
+          [
+            265285.0,
+            1580705.0
+          ],
+          [
+            101445.0,
+            1580705.0
+          ],
+          [
+            101445.0,
+            1416865.0
+          ],
+          [
+            265285.0,
+            1416865.0
+          ]
+        ]
+      ]
+    },
+    "proj:bbox": [
+      101445.0,
+      1416865.0,
+      265285.0,
+      1580705.0
+    ],
+    "datetime": "2020-07-01T00:00:00Z"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -92.9811090995674,
+          35.76775263496624
+        ],
+        [
+          -92.9811090995674,
+          37.26176821128893
+        ],
+        [
+          -94.86746886184928,
+          37.26176821128893
+        ],
+        [
+          -94.86746886184928,
+          35.76775263496624
+        ],
+        [
+          -92.9811090995674,
+          35.76775263496624
+        ]
+      ]
+    ]
+  },
+  "links": [
+    {
+      "rel": "handbook",
+      "href": "https://www.nrcs.usda.gov/wps/PA_NRCSConsumption/download?cid=nrcs142p2_051847&ext=pdf",
+      "type": "application/pdf",
+      "title": "gSSURGO User Guide",
+      "description": "Also includes data usage information"
+    }
+  ],
+  "assets": {
+    "aws": {
+      "href": "/data/ssurgo/gnatsgo/aws_conus_101445_1580705_265285_1416865.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "aws",
+      "raster:bands": [
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "mukey": {
+      "href": "/data/ssurgo/gnatsgo/mukey_conus_101445_1580705_265285_1416865.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "mukey",
+      "raster:bands": [
+        {
+          "nodata": 2147483647.0,
+          "data_type": "int32",
+          "spatial_resolution": 10
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    },
+    "soc": {
+      "href": "/data/ssurgo/gnatsgo/soc_conus_101445_1580705_265285_1416865.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "soc",
+      "raster:bands": [
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        },
+        {
+          "nodata": 2147483648.0,
+          "data_type": "float32",
+          "spatial_resolution": 10
+        }
+      ],
+      "roles": [
+        "data"
+      ]
+    }
+  },
+  "bbox": [
+    -94.86746886184928,
+    35.76775263496624,
+    -92.9811090995674,
+    37.26176821128893
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
+  ]
+}

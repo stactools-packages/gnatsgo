@@ -1,6 +1,8 @@
+import logging
 import os.path
 import tempfile
 
+import dask.dataframe as dd
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -15,9 +17,10 @@ from shapely.geometry import box, mapping
 from stactools.core.utils.convert import cogify
 
 from stactools.gnatsgo.constants import (CONUS, DEFAULT_TILE_SIZE,
-                                         GNATSGO_EXTENTS, NON_CONUS,
-                                         SSURGO_VALU1_GROUPS, TABLES,
+                                         GNATSGO_EXTENTS, NON_CONUS, TABLES,
                                          VALU1_DESCRIPTIONS)
+
+logger = logging.getLogger(__name__)
 
 
 class Table:
@@ -169,7 +172,8 @@ class Table:
         if self.schema is not None:  # only need to create once
             return self.schema
 
-        self.schema = pyarrow.Schema.from_pandas(dataframe)
+        self.schema = pyarrow.Schema.from_pandas(dataframe,
+                                                 preserve_index=False)
         if self.description is not None:
             self.schema = self.schema.with_metadata(
                 {'description': self.description})
@@ -194,13 +198,12 @@ class Table:
 
         t = None
         for reg in self.files:
-            print(self.files[reg])
+            logger.info(self.files[reg])
             tt = gpd.read_file(self.files[reg],
                                driver='OpenFileGDB',
                                layer=self.table_name,
                                ignore_geometry=(not self.has_geom),
                                ignore_fields=ignore_fields)
-
             for col in [
                     k for k, v in self.astype.items()
                     if v == 'boolean' and k in tt.columns
@@ -220,10 +223,13 @@ class Table:
                 tt['state'] = reg
                 tt = tt.astype(self.astype)
                 tt.info(memory_usage="deep")
-                tt.to_parquet(os.path.join(out_dir,
-                                           f"{self.table_name}.parquet"),
-                              partition_cols=['state'],
-                              schema=self._schema(tt))
+                ddtt = dd.from_pandas(tt, npartitions=1)
+                ddtt.to_parquet(os.path.join(out_dir,
+                                             f"{self.table_name}.parquet"),
+                                partition_on=['state'],
+                                schema=self._schema(tt),
+                                engine='pyarrow',
+                                compression='snappy')
             else:
                 t = tt if t is None else t.append(tt)
 
@@ -231,8 +237,11 @@ class Table:
             # convert types and write single parquet file
             t = t.astype(self.astype)
             t.info(memory_usage="deep")
-            t.to_parquet(os.path.join(out_dir, f"{self.table_name}.parquet"),
-                         schema=self._schema(t))
+            ddt = dd.from_pandas(t, npartitions=1)
+            ddt.to_parquet(os.path.join(out_dir, f"{self.table_name}.parquet"),
+                           schema=self._schema(t),
+                           engine='pyarrow',
+                           compression='snappy')
         if not out_dir:
             return t
 
@@ -245,8 +254,8 @@ def to_parquet(gssurgo_dir, gnatsgo_dir, out_dir, tables=None):
         # do 'em all
         tables = TABLES.keys()
     for table_name in tables:
-        print(table_name)
-        print("  concatting table")
+        logger.info(table_name)
+        logger.info("  concatting table")
         desc = None
         if table_name != 'valu1':  # valu1 is not in metadata tables
             descriptions = mdstattabs[mdstattabs.tabphyname ==
@@ -288,17 +297,17 @@ def bounds_to_geojson(bbox: list, in_crs: int) -> tuple:
 def tile(gnatsgo_dir, gssurgo_dir, out_dir, size=DEFAULT_TILE_SIZE):
     """Mosiacs state rasters and tile to a grid"""
     for state in NON_CONUS['gSSURGO']:
-        print(state)
+        logger.info(state)
         tile_image(os.path.join(gssurgo_dir, f"gSSURGO_{state}.tif"), out_dir,
-                   size, f"mukey_{state.lower()}")
+                   size, state.lower())
     for state in NON_CONUS['gNATSGO']:
-        print(state)
+        logger.info(state)
         tile_image(os.path.join(gnatsgo_dir, f"gNATSGO_{state}.tif"), out_dir,
-                   size, f"mukey_{state.lower()}")
+                   size, state.lower())
     with tempfile.TemporaryDirectory() as tmpdir:
         vrt_file = os.path.join(tmpdir, 'mukey.vrt')
         create_conus_vrt(gnatsgo_dir, gssurgo_dir, vrt_file)
-        tile_image(vrt_file, out_dir, size, "mukey_conus")
+        tile_image(vrt_file, out_dir, size, "conus")
 
 
 def tile_image(infile, outdir, size, basename=None):
@@ -312,7 +321,7 @@ def tile_image(infile, outdir, size, basename=None):
             if not np.all(td == dataset.nodata):
                 tile.subset(infile, outdir, basename)
             else:
-                print("   no data -- skipping")
+                logger.warn("   no data -- skipping")
 
 
 def create_conus_vrt(gnatsgo_dir, gssurgo_dir, outfile):
@@ -350,12 +359,11 @@ class Tile:
         self._right = right
         self._top = top
 
-    def subset(self, infile, outdir, base=None):
-        if base is None:
-            base = os.path.splitext(os.path.basename(infile))[0]
-        outfile = os.path.join(
-            outdir, (f"{base}_{str(int(self._left))}_{str(int(self._top))}_"
-                     f"{str(int(self._right))}_{str(int(self._bottom))}.tif"))
+    def subset(self, infile, outdir, base):
+        tile_id = (f"{base}_{str(int(self._left))}_{str(int(self._top))}_"
+                   f"{str(int(self._right))}_{str(int(self._bottom))}")
+        os.makedirs(os.path.join(outdir, tile_id), exist_ok=True)
+        outfile = os.path.join(outdir, tile_id, f"mukey_{tile_id}.tif")
         extra_args = [
             "-co", "RESAMPLING=NEAREST", "-projwin",
             str(self._left),
@@ -366,36 +374,64 @@ class Tile:
         return cogify(infile, outfile, extra_args=extra_args)
 
 
-def create_value_ad_rasters(parquet_table, mukey_files, destination=None):
-    valu1 = pd.read_parquet(parquet_table)
+def create_derived_rasters(parquet_table,
+                           mukey_files,
+                           destination=None,
+                           parquet_storage_options=None):
+    logger.info("reading parquet table")
+    valu1 = pd.read_parquet(
+        parquet_table,
+        engine='pyarrow',
+        storage_options=parquet_storage_options).set_index('mukey')
 
+    cogs_produced = []
     for mukey_file in mukey_files:
-        print("processing", mukey_file)
-        in_dir, file_name = os.path.split(mukey_file)
-        prod, suffix = file_name.split("_", 1)
+        if '?' in mukey_file:
+            mf_tmp, _ = mukey_file.split('?', 1)
+        else:
+            mf_tmp = mukey_file
+        in_dir, file_name = os.path.split(mf_tmp)
+        logger.info("processing %s", file_name)
+
+        _, suffix = file_name.split("_", 1)
         out_dir = destination if destination is not None else in_dir
 
         with rasterio.open(mukey_file) as f:
             profile = f.profile
-            profile.update(dtype=rasterio.float32)
             profile.update(driver='COG')
 
             mukey = f.read(1)
             unique_mukeys, inverse = np.unique(mukey, return_inverse=True)
-            print("  unique mukeys:", len(unique_mukeys))
+            logger.info("  unique mukeys: %d", len(unique_mukeys))
 
-            for group in SSURGO_VALU1_GROUPS:
-                profile.update(count=len(SSURGO_VALU1_GROUPS[group]))
-                out_file = os.path.join(out_dir, f"{group}_{suffix}")
-                print(out_file)
+            for col in valu1.columns:
+                if col == 'mukey':
+                    continue
+                logger.info("  starting %s", col)
+                if valu1[col].dtype.name == 'Int16':
+                    valu1[col] = valu1[col].fillna(-9999).astype('int16')
+                    profile.update(dtype=rasterio.int16,
+                                   nodata=-9999,
+                                   resampling='NEAREST')
+                elif valu1[col].dtype.name == 'float32':
+                    profile.update(dtype=rasterio.float32)
+                else:
+                    raise TypeError('unsupported type')
+                out_file = os.path.join(out_dir,
+                                        f"{col.replace('_', '-')}_{suffix}")
 
+                d = np.array([
+                    valu1[col].get(mk, profile['nodata'])
+                    for mk in unique_mukeys
+                ])[inverse].reshape(mukey.shape)
+                if valu1[col].dtype.name == 'float32':
+                    d = np.nan_to_num(d, nan=profile['nodata'])
+                if (d == profile['nodata']).all():
+                    logger.info('no valid data -- skipping')
+                    continue
                 with rasterio.open(out_file, 'w', **profile) as dst:
-                    for id, col in enumerate(SSURGO_VALU1_GROUPS[group],
-                                             start=1):
-                        d = np.array([
-                            valu1[col].get(mk, profile['nodata'])
-                            for mk in unique_mukeys
-                        ])[inverse].reshape(mukey.shape)
-                        d = np.nan_to_num(d, nan=profile['nodata'])
-                        dst.write_band(id, d)
-                        dst.set_band_description(id, col)
+                    dst.write_band(1, d.astype(profile['dtype']))
+                    dst.set_band_description(1, VALU1_DESCRIPTIONS[col])
+                logger.info('    finishd %s', col)
+                cogs_produced.append(out_file)
+    return cogs_produced

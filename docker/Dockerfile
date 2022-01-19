@@ -6,9 +6,6 @@ ARG DOCKER_WORKDIR
 ENV PYTHON_VERSION=3.9
 WORKDIR $DOCKER_WORKDIR
 
-COPY environment.yml /tmp/environment.yml
-RUN conda env update -f /tmp/environment.yml -n base && rm /tmp/environment.yml
-
 # For caching purposes, install dependencies but remove the actual package
 COPY pyproject.toml setup.cfg ./
 COPY src/$DOCKER_NAMESPACE_PACKAGE_DIR/__init__.py src/$DOCKER_NAMESPACE_PACKAGE_DIR/

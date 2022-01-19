@@ -5,7 +5,7 @@ import click
 
 from stactools.gnatsgo import stac
 from stactools.gnatsgo.constants import DEFAULT_TILE_SIZE
-from stactools.gnatsgo.utils import create_value_ad_rasters, tile, to_parquet
+from stactools.gnatsgo.utils import create_derived_rasters, tile, to_parquet
 
 logger = logging.getLogger(__name__)
 
@@ -54,20 +54,20 @@ def create_gnatsgo_command(cli):
         tile(gnatsgo_dir, gssurgo_dir, out_dir, size)
 
     @gnatsgo.command(
-        "create-value-ad-rasters",
+        "create-derived-rasters",
         help="create raster layers using the value-ad table provided by ssurgo"
     )
     @click.argument("gssurgo_gdb")
     @click.argument("mukey_files", nargs=-1)
-    def value_ad_command(gssurgo_gdb: str, mukey_files: List[str]):
-        """gSSURGO provides a "value ad" table with commonly calculated values
+    def derived_rasters_command(gssurgo_gdb: str, mukey_files: List[str]):
+        """gSSURGO provides a value-add table with commonly calculated values
         for each map unit. Use this table and the mukey rasters to create COGs.
 
         Args:
             gssurgo_gdb (str): path to the gSSURGO CONUS geodatabase
             mukey_files (list): list of mukey rasters to process
         """
-        create_value_ad_rasters(gssurgo_gdb, mukey_files)
+        create_derived_rasters(gssurgo_gdb, mukey_files)
 
     @gnatsgo.command(
         "create-collection",

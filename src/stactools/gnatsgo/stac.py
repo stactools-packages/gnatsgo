@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import pyarrow.parquet as pq
 import rasterio
@@ -55,17 +55,12 @@ def create_collection(parquet_path: str) -> Collection:
     table_tables = []
     for table_name in TABLES.keys():
         logger.info(table_name)
-        filters = None
-        if TABLES[table_name].get('partition', False):  # type: ignore
-            # just read one small state
-            filters = [('state', '=', 'NH')]
-        t = pq.read_table(os.path.join(parquet_path, f"{table_name}.parquet"),
-                          filters=filters)
+        s = pq.read_schema(
+            os.path.join(parquet_path, f"{table_name}.parquet",
+                         '_common_metadata'))
         table_tables.append({
-            "name":
-            table_name,
-            "description":
-            t.schema.metadata[b'description'].decode(),
+            "name": table_name,
+            "description": s.metadata[b'description'].decode(),
         })
 
     collection.extra_fields["table:tables"] = table_tables
@@ -76,27 +71,27 @@ def create_collection(parquet_path: str) -> Collection:
 
 
 def create_item(asset_hrefs: Union[str, List[str]],
-                read_href_modifier: Optional[ReadHrefModifier] = None) -> Item:
+                read_href_modifier: Optional[ReadHrefModifier] = None,
+                storage_options: Optional[Dict] = None) -> Item:
     """Create a STAC Item from either a parquet file, or aa tile of gNATSGO/gSSURGO data."""
     if isinstance(asset_hrefs, str):
         asset_hrefs = [asset_hrefs]
-    if read_href_modifier:
-        modified_hrefs = [read_href_modifier(href) for href in asset_hrefs]
-    else:
-        modified_hrefs = asset_hrefs
-
-    item_id, extension = os.path.splitext(os.path.basename(modified_hrefs[0]))
+    item_id, extension = os.path.splitext(os.path.basename(asset_hrefs[0]))
 
     if extension == '.parquet':
-        if len(modified_hrefs) > 1:
+        if len(asset_hrefs) > 1:
             raise ValueError('item should contain only one parquet table')
-        return _create_item_from_parquet(item_id, modified_hrefs[0])
+        return _create_item_from_parquet(item_id, asset_hrefs[0],
+                                         storage_options)
     else:
         _, item_id = item_id.split('_', 1)
-        return _create_item_from_tile(item_id, modified_hrefs)
+        return _create_item_from_tile(item_id, asset_hrefs, read_href_modifier)
 
 
-def _create_item_from_parquet(table_name: str, asset_href: str) -> Item:
+def _create_item_from_parquet(table_name: str,
+                              asset_href: str,
+                              storage_options: Optional[Dict] = None) -> Item:
+
     bbox = overall_bbox()
     geometry = mapping(box(*bbox))
 
@@ -106,13 +101,23 @@ def _create_item_from_parquet(table_name: str, asset_href: str) -> Item:
                 datetime=GNATSGO_DATETIME,
                 properties={})
 
+    if storage_options:
+        cleaned_options = storage_options.copy()
+        cleaned_options.pop('credential', None)
+        asset_extra_fields = {"table:storage_options": cleaned_options}
+    else:
+        asset_extra_fields = None  # type: ignore
+
     # don't do the validate here, because metadata is in byte strings, which angers json
     item = stac_table.generate(asset_href,
                                item,
+                               storage_options=storage_options,
+                               asset_extra_fields=asset_extra_fields,
                                proj=False,
                                count_rows=False,
                                validate=False)
 
+    item.assets['data'].href = asset_href
     item.properties['table:columns'] = [
         tc for tc in item.properties['table:columns']
         if not tc['name'].startswith('__')
@@ -127,8 +132,16 @@ def _create_item_from_parquet(table_name: str, asset_href: str) -> Item:
     return item
 
 
-def _create_item_from_tile(tile_id, asset_hrefs) -> Item:
-    with rasterio.open(asset_hrefs[0]) as dataset:
+def _create_item_from_tile(
+        tile_id: str,
+        asset_hrefs: List[str],
+        read_href_modifier: Optional[ReadHrefModifier] = None) -> Item:
+    if read_href_modifier:
+        modified_hrefs = [read_href_modifier(href) for href in asset_hrefs]
+    else:
+        modified_hrefs = asset_hrefs
+
+    with rasterio.open(modified_hrefs[0]) as dataset:
         epsg = dataset.crs.to_epsg()
         wkt = dataset.crs.wkt
         bbox = list(dataset.bounds)
@@ -155,23 +168,25 @@ def _create_item_from_tile(tile_id, asset_hrefs) -> Item:
     projection.bbox = bbox
 
     # Create data assets
-    for href in sorted(asset_hrefs):
+    for i, href in enumerate(asset_hrefs):
         title, _ = os.path.basename(href).split('_', 1)
+        title = title.replace('-', '_')
         data_asset = Asset(href=href,
                            media_type=MediaType.COG,
                            roles=["data"],
                            title=title)
-        item.add_asset(title, data_asset)
 
+        item.add_asset(title, data_asset)
         rb = []
-        with rasterio.open(href) as dataset:
-            for i in range(len(dataset.indexes)):
-                # nodata = dataset.get_nodatavals()[i]
-                # dtype = dataset.dtypes[i]
-                rb.append(
-                    RasterBand.create(nodata=dataset.get_nodatavals()[i],
-                                      data_type=dataset.dtypes[i],
-                                      spatial_resolution=10))
+        with rasterio.open(modified_hrefs[i]) as dataset:
+            if title == 'mukey':
+                data_asset.description = "Map unit key is the unique identifier of a record in the Mapunit table."  # noqa
+            else:
+                data_asset.description = dataset.descriptions[0]
+            rb.append(
+                RasterBand.create(nodata=dataset.nodatavals[0],
+                                  data_type=dataset.dtypes[0],
+                                  spatial_resolution=10))
         rast_ext = RasterExtension.ext(data_asset, add_if_missing=True)
         rast_ext.bands = rb
 

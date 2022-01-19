@@ -13,7 +13,7 @@
     },
     {
       "rel": "self",
-      "href": "/path/to/collection.json",
+      "href": "/opt/stactools-gnatsgo/collection.json",
       "type": "application/json"
     }
   ],
