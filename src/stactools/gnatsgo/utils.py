@@ -25,19 +25,13 @@ logger = logging.getLogger(__name__)
 
 class Table:
 
-    def __init__(self,
-                 table_name,
-                 gssurgo_dir,
-                 gnatsgo_dir=None,
-                 description=None,
-                 has_geom=False):
+    def __init__(self, table_name, in_dir, description=None, has_geom=False):
         self.table_name = table_name
         self.description = description
         self.has_geom = has_geom
         self.ssurgo_only = TABLES.get(table_name, {}).get('ssurgo_only', False)
         self.partition = TABLES.get(table_name, {}).get('partition', False)
-        self.gssurgo_dir = gssurgo_dir
-        self.gnatsgo_dir = gnatsgo_dir
+        self.in_dir = in_dir
         self._file_list()
         self._table_def()
         self.schema = None
@@ -64,11 +58,11 @@ class Table:
             gssurgo_list += NON_CONUS['gSSURGO']
 
         self.files = {
-            reg: os.path.join(self.gnatsgo_dir, f"gNATSGO_{reg}.gdb")
+            reg: os.path.join(self.in_dir, f"gNATSGO_{reg}.gdb")
             for reg in gnatsgo_list
         }
         self.files.update({
-            reg: os.path.join(self.gssurgo_dir, f"gSSURGO_{reg}.gdb")
+            reg: os.path.join(self.in_dir, f"gSSURGO_{reg}.gdb")
             for reg in gssurgo_list
         })
 
@@ -246,8 +240,8 @@ class Table:
             return t
 
 
-def to_parquet(gssurgo_dir, gnatsgo_dir, out_dir, tables=None):
-    mdstattabs = gpd.read_file(os.path.join(gssurgo_dir, 'gSSURGO_CONUS.gdb'),
+def to_parquet(in_dir, out_dir, tables=None):
+    mdstattabs = gpd.read_file(os.path.join(in_dir, 'gSSURGO_CONUS.gdb'),
                                driver='OpenFileGDB',
                                layer='mdstattabs')
     if not tables:
@@ -265,7 +259,7 @@ def to_parquet(gssurgo_dir, gnatsgo_dir, out_dir, tables=None):
         else:
             desc = VALU1_DESCRIPTIONS['table']
 
-        t = Table(table_name, gssurgo_dir, gnatsgo_dir, description=desc)
+        t = Table(table_name, in_dir, description=desc)
         t.concat_table(out_dir=out_dir)
 
 
@@ -294,19 +288,16 @@ def bounds_to_geojson(bbox: list, in_crs: int) -> tuple:
     return transformed_bbox, mapping(box(*transformed_bbox, ccw=True))
 
 
-def tile(gnatsgo_dir, gssurgo_dir, out_dir, size=DEFAULT_TILE_SIZE):
+def tile(in_dir, out_dir, size=DEFAULT_TILE_SIZE):
     """Mosiacs state rasters and tile to a grid"""
-    for state in NON_CONUS['gSSURGO']:
-        logger.info(state)
-        tile_image(os.path.join(gssurgo_dir, f"gSSURGO_{state}.tif"), out_dir,
-                   size, state.lower())
-    for state in NON_CONUS['gNATSGO']:
-        logger.info(state)
-        tile_image(os.path.join(gnatsgo_dir, f"gNATSGO_{state}.tif"), out_dir,
-                   size, state.lower())
+    for prod in ('gNATSGO', 'gSSURGO'):
+        for state in NON_CONUS[prod]:
+            logger.info(state)
+            tile_image(os.path.join(in_dir, f"{prod}_{state}.tif"), out_dir,
+                       size, state.lower())
     with tempfile.TemporaryDirectory() as tmpdir:
         vrt_file = os.path.join(tmpdir, 'mukey.vrt')
-        create_conus_vrt(gnatsgo_dir, gssurgo_dir, vrt_file)
+        create_conus_vrt(in_dir, vrt_file)
         tile_image(vrt_file, out_dir, size, "conus")
 
 
@@ -324,16 +315,12 @@ def tile_image(infile, outdir, size, basename=None):
                 logger.warn("   no data -- skipping")
 
 
-def create_conus_vrt(gnatsgo_dir, gssurgo_dir, outfile):
-    file_list = [
-        os.path.join(gssurgo_dir, f"gSSURGO_{state}.tif")
-        for state in CONUS["gSSURGO"]
-    ]
-    file_list += [
-        os.path.join(gnatsgo_dir, f"gNATSGO_{state}.tif")
-        for state in CONUS["gNATSGO"]
-    ]
-
+def create_conus_vrt(indir, outfile):
+    file_list = []
+    for prod in ('gNATSGO', 'gSSURGO'):
+        file_list += [
+            os.path.join(indir, f"{prod}_{state}.tif") for state in CONUS[prod]
+        ]
     gdal.BuildVRT(outfile, file_list)
 
 

@@ -21,13 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_collection(parquet_path: str) -> Collection:
-    """Create a STAC Collection
-
-    This function includes logic to extract all relevant metadata from
-    an asset describing the STAC collection and/or metadata coded into an
-    accompanying constants.py file.
-
-    See `Collection<https://pystac.readthedocs.io/en/latest/api.html#collection>`_.
+    """Create gnatsgo STAC Collection
 
     parquet_path is a base path where the parquet tables are stored.
                  each will be parsed for the table description.
