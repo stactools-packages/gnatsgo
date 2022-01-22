@@ -64,32 +64,6 @@ NON_CONUS = {
 
 DEFAULT_TILE_SIZE = 163840
 
-SSURGO_VALU1_GROUPS = {
-    'aws': [
-        'aws0_5', 'aws5_20', 'aws20_50', 'aws50_100', 'aws100_150',
-        'aws150_999', 'aws0_20', 'aws0_30', 'aws0_100', 'aws0_150', 'aws0_999'
-    ],
-    'soc': [
-        'soc0_5', 'soc5_20', 'soc20_50', 'soc50_100', 'soc100_150',
-        'soc150_999', 'soc0_20', 'soc0_30', 'soc0_100', 'soc0_150', 'soc0_999'
-    ],
-    'tka': [
-        'tk0_5a', 'tk5_20a', 'tk20_50a', 'tk50_100a', 'tk100_150a',
-        'tk150_999a', 'tk0_20a', 'tk0_30a', 'tk0_100a', 'tk0_150a', 'tk0_999a'
-    ],
-    'tks': [
-        'tk0_5s', 'tk5_20s', 'tk20_50s', 'tk50_100s', 'tk100_150s',
-        'tk150_999s', 'tk0_20s', 'tk0_30s', 'tk0_100s', 'tk0_150s', 'tk0_999s'
-    ],
-    'musumcpct': ['musumcpct', 'musumcpcta', 'musumcpcts'],
-    'nccpi3':
-    ['nccpi3corn', 'nccpi3soy', 'nccpi3cot', 'nccpi3sg', 'nccpi3all'],
-    'rootzone': ['rootznemc', 'rootznaws'],
-    'pctearthmc': ['pctearthmc'],
-    'droughty': ['droughty'],
-    'pwsl1pomu': ['pwsl1pomu'],
-}
-
 TABLES = {
     'chaashto': {},
     'chconsistence': {},

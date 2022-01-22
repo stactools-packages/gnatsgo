@@ -22,36 +22,32 @@ def create_gnatsgo_command(cli):
 
     @gnatsgo.command("to-parquet",
                      help="convert tables in incoming GDB files to parquet")
-    @click.argument("gssurgo_dir")
-    @click.argument("gnatsgo_dir")
+    @click.argument("in_dir")
     @click.argument("out_dir")
     @click.argument("tables", nargs=-1)
-    def to_parquet_command(gssurgo_dir: str, gnatsgo_dir: str, out_dir: str,
-                           tables: List[str]):
+    def to_parquet_command(in_dir: str, out_dir: str, tables: List[str]):
         """convert gNATSGO and gSSURGO tables from incoming GDB files to parquet
 
         Args:
-            gssurgo_dir (str): directory containing gSSURGO CONUS and by-state GDBs
-            gnatsgo_dir (str): directory containing gBATSGO CONUS and by-state GDBs
+            in_dir (str): directory containing CONUS and by-state GDBs
             out_dir (str): path to output dir
+            tables (List[str]): optional list of tables to convert
         """
-        to_parquet(gssurgo_dir, gnatsgo_dir, out_dir, tables)
+        to_parquet(in_dir, out_dir, tables)
 
     @gnatsgo.command("tile", help="convert state/territory tifs to tiled")
-    @click.argument("gnatsgo_dir")
-    @click.argument("gssurgo_dir")
+    @click.argument("in_dir")
     @click.argument("out_dir")
     @click.option("-s", "--size", default=DEFAULT_TILE_SIZE)
-    def tile_command(gnatsgo_dir, gssurgo_dir, out_dir, size):
+    def tile_command(in_dir, out_dir, size):
         """Tiles the input files to a grid.
         The source gNATSGO data contain state-based 10m GeoTIFFS, so we tile.
 
         Args:
-            gnatsgo_dir (str): directory containing state/territory gnatsgo mukey rasters
-            gssurgo_dir (str): directory containing state/territory gssurgo mukey rasters
+            in_dir (str): directory containing state/territory mukey rasters
             out_dir (str): output directory
         """
-        tile(gnatsgo_dir, gssurgo_dir, out_dir, size)
+        tile(in_dir, out_dir, size)
 
     @gnatsgo.command(
         "create-derived-rasters",
@@ -74,12 +70,12 @@ def create_gnatsgo_command(cli):
         short_help="Creates a STAC collection",
     )
     @click.argument("destination")
-    @click.argument("parquet_path")
+    @click.argument("parquet_dir")
     def create_collection_command(destination: str, parquet_path: str):
         """Creates a STAC Collection
 
         Args:
-            parquet_path (str): A path to directory containing parquet tables
+            parquet_dir (str): A path to directory containing the parquet tables
             destination (str): An HREF for the Collection JSON
         """
         collection = stac.create_collection(parquet_path)
