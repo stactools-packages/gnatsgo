@@ -71,14 +71,14 @@ def create_gnatsgo_command(cli):
     )
     @click.argument("destination")
     @click.argument("parquet_dir")
-    def create_collection_command(destination: str, parquet_path: str):
+    def create_collection_command(destination: str, parquet_dir: str):
         """Creates a STAC Collection
 
         Args:
             parquet_dir (str): A path to directory containing the parquet tables
             destination (str): An HREF for the Collection JSON
         """
-        collection = stac.create_collection(parquet_path)
+        collection = stac.create_collection(parquet_dir)
         collection.set_self_href(destination)
         collection.save_object()
         return None
