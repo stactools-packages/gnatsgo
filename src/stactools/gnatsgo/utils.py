@@ -407,10 +407,10 @@ def create_derived_rasters(parquet_table,
                 out_file = os.path.join(out_dir,
                                         f"{col.replace('_', '-')}_{suffix}")
 
-                d = np.array([
-                    valu1[col].get(mk, profile['nodata'])
-                    for mk in unique_mukeys
-                ])[inverse].reshape(mukey.shape)
+                d = (valu1[col].groupby(level=0).first().reindex(
+                    unique_mukeys,
+                    fill_value=profile['nodata']).to_numpy()[inverse].reshape(
+                        mukey.shape))
                 if valu1[col].dtype.name == 'float32':
                     d = np.nan_to_num(d, nan=profile['nodata'])
                 if (d == profile['nodata']).all():

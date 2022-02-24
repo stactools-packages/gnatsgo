@@ -46,10 +46,10 @@ $ stac gnatsgo tile data/inputs data/outputs/tiles
 ```
 
 Create additional derived rasters for commonly mapped values provided in the
-`gSSURGO` `valu1` table:
+`gSSURGO` `valu1` table using the parquet tables and tiled COGs created above::
 
 ```bash
-$ stac gnatsgo create-derived-rasters data/inputs/gSSURGO_CONUS.gdb data/outputs/tiles/conus_*/mukey_conus_*.tif
+$ stac gnatsgo create-derived-rasters data/outputs/tables/valu1.parquet data/outputs/tiles/conus_*/mukey_conus_*.tif
 ```
 
 Create STAC collection including collection-level `table` metadata:
