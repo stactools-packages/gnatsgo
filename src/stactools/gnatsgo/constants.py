@@ -45,6 +45,25 @@ GNATSGO_EXTENTS = [
 ]
 
 # gNATSGO is only provided in states/territories where gSSURGO is gappy
+PRODUCT = {
+    'gNATSGO': {
+        'CONUS': [
+            'AR', 'AZ', 'CA', 'CO', 'FL', 'GA', 'ID', 'KY', 'MI', 'MN', 'MS',
+            'MT', 'ND', 'NH', 'NM', 'NV', 'NY', 'OK', 'OR', 'TN', 'TX', 'UT',
+            'VA', 'VT', 'WA', 'WY'
+        ],
+        'NON_CONUS': ['AK', 'PRUSVI'],
+    },
+    'gSSURGO': {
+        'CONUS': [
+            'AL', 'CT', 'DC', 'DE', 'IA', 'IL', 'IN', 'KS', 'LA', 'MA', 'MD',
+            'ME', 'MO', 'NC', 'NE', 'NJ', 'OH', 'PA', 'RI', 'SC', 'SD', 'WI',
+            'WV'
+        ],
+        'NON_CONUS': ['AS', 'FM', 'GU', 'HI', 'MH', 'MP', 'PW'],
+    },
+}
+
 CONUS = {
     'gSSURGO': [
         'AL', 'CT', 'DC', 'DE', 'IA', 'IL', 'IN', 'KS', 'LA', 'MA', 'MD', 'ME',

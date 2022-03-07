@@ -16,9 +16,8 @@ from rasterio.windows import from_bounds
 from shapely.geometry import box, mapping
 from stactools.core.utils.convert import cogify
 
-from stactools.gnatsgo.constants import (CONUS, DEFAULT_TILE_SIZE,
-                                         GNATSGO_EXTENTS, NON_CONUS, TABLES,
-                                         VALU1_DESCRIPTIONS)
+from stactools.gnatsgo.constants import (DEFAULT_TILE_SIZE, GNATSGO_EXTENTS,
+                                         PRODUCT, TABLES, VALU1_DESCRIPTIONS)
 
 logger = logging.getLogger(__name__)
 
@@ -37,34 +36,35 @@ class Table:
         self.schema = None
 
     def _file_list(self):
-        gssurgo_list = []
-        gnatsgo_list = []
+        self.files = {}
+
+        def _add_files(prod, reglist):
+            self.files.update({
+                reg: os.path.join(self.in_dir, f"{prod}_{reg}.gdb")
+                for reg in reglist
+            })
+
         if self.ssurgo_only:
             # get everything from gSSURGO
-            if self.partition:
-                gssurgo_list += CONUS['gNATSGO'] + CONUS['gSSURGO']
-            else:
-                gssurgo_list += ['CONUS']
-            gssurgo_list += NON_CONUS['gNATSGO'] + NON_CONUS['gSSURGO']
+            if self.partition:  # get all the individual CONUS states
+                _add_files(
+                    'gSSURGO',
+                    PRODUCT['gNATSGO']['CONUS'] + PRODUCT['gSSURGO']['CONUS'])
+            else:  # just use the CONUS gdb
+                _add_files('gSSURGO', ['CONUS'])
+            _add_files(
+                'gSSURGO', PRODUCT['gNATSGO']['NON_CONUS'] +
+                PRODUCT['gSSURGO']['NON_CONUS'])
         else:
             # use gNATSGO where available, and gSSURGO
             # everywhere else
             if self.partition:
-                gnatsgo_list += CONUS['gNATSGO']
-                gssurgo_list += CONUS['gSSURGO']
+                for prod in PRODUCT:
+                    _add_files(prod, PRODUCT[prod]['CONUS'])
             else:
-                gnatsgo_list += ['CONUS']
-            gnatsgo_list += NON_CONUS['gNATSGO']
-            gssurgo_list += NON_CONUS['gSSURGO']
-
-        self.files = {
-            reg: os.path.join(self.in_dir, f"gNATSGO_{reg}.gdb")
-            for reg in gnatsgo_list
-        }
-        self.files.update({
-            reg: os.path.join(self.in_dir, f"gSSURGO_{reg}.gdb")
-            for reg in gssurgo_list
-        })
+                _add_files('gNATSGO', ['CONUS'])
+            for prod in PRODUCT:
+                _add_files(prod, PRODUCT[prod]['NON_CONUS'])
 
     def _table_def(self):
         # get any speficified conversions from constants
@@ -72,10 +72,11 @@ class Table:
         if self.partition:
             # we will partition by state by adding a 'state' column
             # set up a categorical type for the column
-            self.astype['state'] = CategoricalDtype(CONUS['gNATSGO'] +
-                                                    NON_CONUS['gNATSGO'] +
-                                                    CONUS['gSSURGO'] +
-                                                    NON_CONUS['gSSURGO'])
+            all_states = []
+            for prod in PRODUCT:
+                all_states += PRODUCT[prod]['CONUS']
+                all_states += PRODUCT[prod]['NON_CONUS']
+            self.astype['state'] = CategoricalDtype(all_states)
 
         # inspect gdb for column types that should be converted
         # hope that the first gdb is representative
@@ -290,8 +291,8 @@ def bounds_to_geojson(bbox: list, in_crs: int) -> tuple:
 
 def tile(in_dir, out_dir, size=DEFAULT_TILE_SIZE):
     """Mosiacs state rasters and tile to a grid"""
-    for prod in ('gNATSGO', 'gSSURGO'):
-        for state in NON_CONUS[prod]:
+    for prod in PRODUCT:
+        for state in PRODUCT[prod]['NON_CONUS']:
             logger.info(state)
             tile_image(os.path.join(in_dir, f"{prod}_{state}.tif"), out_dir,
                        size, state.lower())
@@ -315,11 +316,12 @@ def tile_image(infile, outdir, size, basename=None):
                 logger.warn("   no data -- skipping")
 
 
-def create_conus_vrt(indir, outfile):
+def create_conus_vrt(in_dir, outfile):
     file_list = []
-    for prod in ('gNATSGO', 'gSSURGO'):
+    for prod in PRODUCT:
         file_list += [
-            os.path.join(indir, f"{prod}_{state}.tif") for state in CONUS[prod]
+            os.path.join(in_dir, f"{prod}_{state}.tif")
+            for state in PRODUCT[prod]['CONUS']
         ]
     gdal.BuildVRT(outfile, file_list)
 

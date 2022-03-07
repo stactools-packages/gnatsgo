@@ -53,17 +53,17 @@ def create_gnatsgo_command(cli):
         "create-derived-rasters",
         help="create raster layers using the value-ad table provided by ssurgo"
     )
-    @click.argument("gssurgo_gdb")
+    @click.argument("parquet_table")
     @click.argument("mukey_files", nargs=-1)
-    def derived_rasters_command(gssurgo_gdb: str, mukey_files: List[str]):
+    def derived_rasters_command(parquet_table: str, mukey_files: List[str]):
         """gSSURGO provides a value-add table with commonly calculated values
         for each map unit. Use this table and the mukey rasters to create COGs.
 
         Args:
-            gssurgo_gdb (str): path to the gSSURGO CONUS geodatabase
+            parquet_table (str): path to the valu1 parquet table
             mukey_files (list): list of mukey rasters to process
         """
-        create_derived_rasters(gssurgo_gdb, mukey_files)
+        create_derived_rasters(parquet_table, mukey_files)
 
     @gnatsgo.command(
         "create-collection",
