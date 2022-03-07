@@ -64,23 +64,6 @@ PRODUCT = {
     },
 }
 
-CONUS = {
-    'gSSURGO': [
-        'AL', 'CT', 'DC', 'DE', 'IA', 'IL', 'IN', 'KS', 'LA', 'MA', 'MD', 'ME',
-        'MO', 'NC', 'NE', 'NJ', 'OH', 'PA', 'RI', 'SC', 'SD', 'WI', 'WV'
-    ],
-    'gNATSGO': [
-        'AR', 'AZ', 'CA', 'CO', 'FL', 'GA', 'ID', 'KY', 'MI', 'MN', 'MS', 'MT',
-        'ND', 'NH', 'NM', 'NV', 'NY', 'OK', 'OR', 'TN', 'TX', 'UT', 'VA', 'VT',
-        'WA', 'WY'
-    ],
-}
-
-NON_CONUS = {
-    'gSSURGO': ['AS', 'FM', 'GU', 'HI', 'MH', 'MP', 'PW'],
-    'gNATSGO': ['AK', 'PRUSVI'],
-}
-
 DEFAULT_TILE_SIZE = 163840
 
 TABLES = {
