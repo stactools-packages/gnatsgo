@@ -5,7 +5,7 @@
 - Name: gnatsgo
 - Package: `stactools.gnatsgo`
 - PyPI: https://pypi.org/project/stactools-gnatsgo/
-- Owner: @githubusername
+- Owner: @justinfisk
 - Dataset homepage: https://www.nrcs.usda.gov/wps/portal/nrcs/detail/soils/survey/geo/?cid=nrcseprd1464625
 - STAC extensions used:
   - [proj](https://github.com/stac-extensions/projection)
